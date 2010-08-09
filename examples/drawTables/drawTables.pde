@@ -18,22 +18,6 @@ void draw() {
     displayDiscreteTable(2, 20, height * 0.75, width - 40, height * 0.20);
 }
 
-void randomFillTable(int t) {
-    int s = cs.tableLength(t);
-    
-    for (int i = 0; i < s; i++) {
-        cs.tableSet(t, i, random(2.0) - 1);
-    }
-}
-
-void createRandomTable(int t, int s) {
-    cs.event("f " + t + " 0 " + s + " 10 0");
-    
-    for (int i = 0; i < s; i++) {
-        cs.tableSet(t, i, i * 2.0 / (float) s - 1.0);
-    }
-}
-
 void displayDiscreteTable(int t, float x, float y, float w, float h) {
     int length = cs.tableLength(t);        
 
