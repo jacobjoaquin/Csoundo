@@ -1,3 +1,5 @@
+Example by Rory Walsh.
+
 <CsoundSynthesizer>
 <CsOptions>
 ;-odevaudio1 -b64 -g -idevaudio1

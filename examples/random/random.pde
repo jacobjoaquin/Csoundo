@@ -1,3 +1,5 @@
+/* Example by Rory Walsh */
+
 import csoundo.*;
 
 Csoundo cs;
