@@ -1,5 +1,5 @@
 /**
- * you can put a one sentence description of your library here.
+ * A Csound interface library for Processing.
  *
  * ##copyright##
  *
@@ -28,18 +28,10 @@ package csoundo;
 import processing.core.*;
 import csnd.*;
 
-/**
- * This is a template class and can be used to start a new processing library or tool.
- * Make sure you rename this class as well as the name of the example package 'template' 
- * to your own lobrary or tool naming convention.
- *  
- * 
- * (the tag @example followed by the name of an example included in folder 'examples' will
- * automatically include the example in the javadoc.)
- *
- *
- */
 
+/**
+ * @example chnInOut
+ */
 
 
 public class Csoundo {
@@ -50,13 +42,12 @@ public class Csoundo {
 	private String csd;
 	public boolean isRunning = false;
 
-	public CsoundPerformanceThread cpThread;
+	public CsoundPerformanceThread perfThread;
 
 	/**
-	 * a Constructor, usually called in the setup() method in your sketch to
-	 * initialize and start the library.
+	 * The Csoundo onstructor, usually called in the setup() method in your
+	 * sketch to initialize and start the library.
 	 * 
-	 * @example Hello
 	 * @param theParent
 	 */
 	public Csoundo(PApplet theParent) {
@@ -67,6 +58,13 @@ public class Csoundo {
 		myParent.registerPost(this);
 	}
 
+	/**
+	 * The Csoundo onstructor, usually called in the setup() method in your
+	 * sketch to initialize and start the library.
+	 * 
+	 * @param theParent The PApplet. Usually pass 'this'
+	 * @param f The Csound file to run. Requires full absolute path.
+	 */
 	public Csoundo(PApplet theParent, String f) {
 		myParent = theParent;
 		welcome();
@@ -97,9 +95,7 @@ public class Csoundo {
 
 	private void welcome() {
 		System.out.println("##name## ##version## by ##author##");
-
 	}
-
 
 	/**
 	 * return the version of the library.
@@ -108,10 +104,6 @@ public class Csoundo {
 	 */
 	public static String version() {
 		return VERSION;
-	}
-
-	public void run() {
-		csoundPerformanceThread();		
 	}
 
 	private void csoundPerformanceThread() {
@@ -124,20 +116,30 @@ public class Csoundo {
 
 			if (compile == 0) {
 				isRunning = true;
-				cpThread = new CsoundPerformanceThread(csound);
-				cpThread.Play();
+				perfThread = new CsoundPerformanceThread(csound);
+				perfThread.Play();
 			}
 		}
 	}
 
+	/**
+	 * Creates a Csound score event.
+	 * 
+	 * @param s The score event. ie "i 1 0 1 0.707 440"
+	 */
 	public void event(String s) {
 		if (isRunning) {
-			cpThread.InputMessage(s);
-			cpThread.FlushMessageQueue();
+			perfThread.InputMessage(s);
+			perfThread.FlushMessageQueue();
 
 		}
 	}
 
+	/**
+	 * Returns the value of the specified chn bus.
+	 * 
+	 * @return chn bus value
+	 */
 	public float getChn(String chn) {
 		if (isRunning) {
 			return csound.GetChannel(chn);
@@ -146,43 +148,11 @@ public class Csoundo {
 		return 0;
 	}
 
-	public void setChn(String chn, float value) {
-		if (isRunning) {
-			csound.SetChannel(chn, value);
-		}
-	}
-
-	public float tableGet(int t, int i) {
-		if (isRunning) {
-			return csound.TableGet(t, i);
-		}
-
-		return 0;    
-	}
-
-	public int tableLength(int t) {
-		if (isRunning) {
-			return csound.TableLength(t);
-		}
-
-		return 0;
-	}
-
-
-	public void tableSet(int t, int i, float v) {
-		if (isRunning) {
-			csound.TableSet(t, i, v);
-		}
-	}
-
-	public float sr() {
-		if (isRunning) {
-			return csound.GetSr();
-		}
-
-		return 0;
-	}
-
+	/**
+	 * Return the control rate.
+	 * 
+	 * @return krate
+	 */
 	public float kr() {
 		if (isRunning) {
 			return csound.GetKr();
@@ -191,6 +161,11 @@ public class Csoundo {
 		return 0;
 	}
 
+	/**
+	 * Return the ksmps, samples per k-block
+	 * 
+	 * @return ksmps
+	 */
 	public float ksmps() {
 		if (isRunning) {
 			return csound.GetKsmps();
@@ -199,6 +174,11 @@ public class Csoundo {
 		return 0;
 	}
 
+	/**
+	 * Return the number or audio output channels.
+	 * 
+	 * @return number of output channels
+	 */
 	public float nchnls() {
 		if (isRunning) {
 			return csound.GetNchnls();
@@ -206,7 +186,77 @@ public class Csoundo {
 
 		return 0;
 	}
-	
+
+	/**
+	 * starts the Csound engine.
+	 */
+	public void run() {
+		csoundPerformanceThread();		
+	}
+
+	/**
+	 * Sets the value of the specified chn bus.
+	 */
+	public void setChn(String chn, float value) {
+		if (isRunning) {
+			csound.SetChannel(chn, value);
+		}
+	}
+
+	/**
+	 * Return the samplerate.
+	 * 
+	 * @return samplerate
+	 */
+	public float sr() {
+		if (isRunning) {
+			return csound.GetSr();
+		}
+
+		return 0;
+	}
+
+	/**
+	 * Return a value from a Csound table.
+	 * 
+	 * @param t Table number
+	 * @param i Index
+	 * @return Csound table value
+	 */
+	public float tableGet(int t, int i) {
+		if (isRunning) {
+			return csound.TableGet(t, i);
+		}
+
+		return 0;    
+	}
+
+	/**
+	 * Return the length of a Csound table.
+	 * 
+	 * @param t Table number
+	 * @return Csound table length
+	 */
+	public int tableLength(int t) {
+		if (isRunning) {
+			return csound.TableLength(t);
+		}
+
+		return 0;
+	}
+
+	/**
+	 * Sets the value of a Csound table at a specif index.
+	 * 
+	 * @param t Table number
+	 * @param i Index
+	 * @param v Value
+	 */
+	public void tableSet(int t, int i, float v) {
+		if (isRunning) {
+			csound.TableSet(t, i, v);
+		}
+	}
 }
 
 
