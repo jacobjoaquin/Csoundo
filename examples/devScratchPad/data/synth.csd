@@ -7,6 +7,7 @@ nchnls = 1
 0dbfs = 1
 
 gi_sin ftgen 1, 0, 8192, 10, 1
+;gi_foo ftgen 20, 0, 8192, 10, 1
 
 instr 1
     ; Keep Csound running

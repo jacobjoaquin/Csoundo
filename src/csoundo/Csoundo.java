@@ -39,17 +39,15 @@ public class Csoundo {
 	PApplet myParent;
 	public final static String VERSION = "##version##";
 
-//	public Csound csound;
+	private boolean useThreads = true;
 	private String csd;
 	public boolean isRunning = false;
 
+	private CppSound csound;
 	public CsoundFile csoundFile;
 	public CsoundPerformanceThread perfThread;
-
-	private SWIGTYPE_p_void v;	
-	private SWIGTYPE_p_CSOUND_ c;
-	private CppSound csound;
 	
+	public SWIGTYPE_p_CSOUND_ csound_p;
 	/**
 	 * The Csoundo onstructor, usually called in the setup() method in your
 	 * sketch to initialize and start the library.
@@ -75,16 +73,16 @@ public class Csoundo {
 		myParent = theParent;
 		welcome();
 
+		csound = new CppSound();
 		csd = f;
+
 		myParent.registerDispose(this);
 		myParent.registerPost(this);
-
-		c = csnd.csoundCreate(v);
-		csound = new CppSound();
 	}
 
 	public void dispose() {
 		System.out.println("Csound dispose");
+		// TODO: Shut down Csound properly.
 	}
 
 	public void pre() { }
@@ -109,12 +107,15 @@ public class Csoundo {
 		if (true) {
 			csnd.csoundInitialize(null, null,
 					csnd.CSOUNDINIT_NO_SIGNAL_HANDLER);
+			
 			csound = new CppSound();
+			csound_p = csound.getCsound();
 			
 			csoundFile = csound.getCsoundFile();
 			csoundFile.setCSD(fileToString(csd));
 			
-			// csd should get unique names, in case of multiple instances
+			// TODO: csd should get unique names, in case of multiple
+			//       instances.
 			String tempCSD = "temp.csd";
 			csoundFile.setCommand("-d -odac " + myParent.dataPath("") +
 					              tempCSD);
@@ -125,7 +126,7 @@ public class Csoundo {
 			
 			if (compile == 0) {
 				isRunning = true;
-				perfThread = new CsoundPerformanceThread(csound.getCsound());
+				perfThread = new CsoundPerformanceThread(csound_p);
 				perfThread.Play();
 			}
 		}
@@ -161,8 +162,17 @@ public class Csoundo {
 	 */
 	public void event(String s) {
 		if (isRunning) {
-			perfThread.InputMessage(s);
-			perfThread.FlushMessageQueue();
+			
+			if (useThreads) {
+				SWIGTYPE_p_void thread = csnd.csoundCreateMutex(1);
+				csnd.csoundLockMutex(thread);
+				perfThread.InputMessage(s);
+				perfThread.FlushMessageQueue();
+				csnd.csoundUnlockMutex(thread);
+				csnd.csoundDestroyMutex(thread);
+			} else {
+				perfThread.InputMessage(s);
+			}
 
 		}
 	}
@@ -257,7 +267,16 @@ public class Csoundo {
 	 */
 	public float tableGet(int t, int i) {
 		if (isRunning) {
-			return csound.TableGet(t, i);
+			if (useThreads) {
+				SWIGTYPE_p_void thread = csnd.csoundCreateMutex(1);
+				csnd.csoundLockMutex(thread);
+				float value = csnd.csoundTableGet(csound_p, t, i);
+				csnd.csoundUnlockMutex(thread);
+				csnd.csoundDestroyMutex(thread);
+				return value;
+			} else {
+				return csnd.csoundTableGet(csound_p, t, i);
+			}
 		}
 
 		return 0;    
@@ -271,7 +290,16 @@ public class Csoundo {
 	 */
 	public int tableLength(int t) {
 		if (isRunning) {
-			return csound.TableLength(t);
+			if (useThreads) {
+				SWIGTYPE_p_void thread = csnd.csoundCreateMutex(1);
+				csnd.csoundLockMutex(thread);
+				int value = csnd.csoundTableLength(csound_p, t);
+				csnd.csoundUnlockMutex(thread);
+				csnd.csoundDestroyMutex(thread);
+				return value;
+			} else {
+				return csnd.csoundTableLength(csound_p, t);
+			}
 		}
 
 		return 0;
@@ -286,7 +314,15 @@ public class Csoundo {
 	 */
 	public void tableSet(int t, int i, float v) {
 		if (isRunning) {
-			csound.TableSet(t, i, v);
+			if (useThreads) {
+				SWIGTYPE_p_void thread = csnd.csoundCreateMutex(1);
+				csnd.csoundLockMutex(thread);
+				csnd.csoundTableSet(csound_p, t, i, v);
+				csnd.csoundUnlockMutex(thread);
+				csnd.csoundDestroyMutex(thread);
+			} else {
+				csnd.csoundTableSet(csound_p, t, i, v);
+			}
 		}
 	}
 }
