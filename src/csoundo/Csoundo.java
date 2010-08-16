@@ -25,25 +25,31 @@
 
 package csoundo;
 
+import java.io.*;
 import processing.core.*;
 import csnd.*;
 
 
 /**
  * @example chnInOut
- */
+ */	
 
 
 public class Csoundo {
 	PApplet myParent;
 	public final static String VERSION = "##version##";
 
-	public Csound csound;
+//	public Csound csound;
 	private String csd;
 	public boolean isRunning = false;
 
+	public CsoundFile csoundFile;
 	public CsoundPerformanceThread perfThread;
 
+	private SWIGTYPE_p_void v;	
+	private SWIGTYPE_p_CSOUND_ c;
+	private CppSound csound;
+	
 	/**
 	 * The Csoundo onstructor, usually called in the setup() method in your
 	 * sketch to initialize and start the library.
@@ -72,26 +78,18 @@ public class Csoundo {
 		csd = f;
 		myParent.registerDispose(this);
 		myParent.registerPost(this);
+
+		c = csnd.csoundCreate(v);
+		csound = new CppSound();
 	}
 
 	public void dispose() {
 		System.out.println("Csound dispose");
-		//cpThread.Stop();
-		csound.Stop();
-		csound.Cleanup();
-		csound.Reset();
 	}
 
-	public void pre() {
-//		cpThread.FlushMessageQueue();
-//		csnd.csoundCreateThreadLock();
-		
-	}
+	public void pre() { }
 
-	public void post() {
-//		csnd.csoundDestroyThreadLock(arg0);
-//		cpThread.FlushMessageQueue();
-	}
+	public void post() { }
 
 	private void welcome() {
 		System.out.println("##name## ##version## by ##author##");
@@ -106,22 +104,56 @@ public class Csoundo {
 		return VERSION;
 	}
 
-	private void csoundPerformanceThread() {
-		if (csound == null) {
+	private void cppSoundPerf() {
+		// TODO: Make sure csound isn't already running
+		if (true) {
 			csnd.csoundInitialize(null, null,
 					csnd.CSOUNDINIT_NO_SIGNAL_HANDLER);
-			csound = new Csound(); 
-
-			int compile = csound.Compile(csd);
-
+			csound = new CppSound();
+			
+			csoundFile = csound.getCsoundFile();
+			csoundFile.setCSD(fileToString(csd));
+			
+			// csd should get unique names, in case of multiple instances
+			String tempCSD = "temp.csd";
+			csoundFile.setCommand("-d -odac " + myParent.dataPath("") +
+					              tempCSD);
+			
+			csoundFile.exportForPerformance();
+			int compile = csound.compile();
+			System.out.println("compile status: " + compile);
+			
 			if (compile == 0) {
 				isRunning = true;
-				perfThread = new CsoundPerformanceThread(csound);
+				perfThread = new CsoundPerformanceThread(csound.getCsound());
 				perfThread.Play();
 			}
 		}
 	}
-
+	
+	/**
+	 * Reads a csd file into a string
+	 */
+	private String fileToString(String path) {
+		FileInputStream fin;
+		StringBuilder sb = new StringBuilder();
+		
+		try {
+		    fin = new FileInputStream(csd);
+		    BufferedReader d = new BufferedReader(new InputStreamReader(fin));
+		    String line;
+		    while ((line = d.readLine()) != null) {
+		    		sb.append(line + "\n");
+		    }
+		    
+		    fin.close();		
+		} catch (IOException e) {
+			System.err.println ("Unable to read CSD file.");
+		}
+		
+		return sb.toString();
+	}
+	
 	/**
 	 * Creates a Csound score event.
 	 * 
@@ -191,7 +223,7 @@ public class Csoundo {
 	 * starts the Csound engine.
 	 */
 	public void run() {
-		csoundPerformanceThread();		
+		cppSoundPerf();
 	}
 
 	/**
@@ -258,9 +290,6 @@ public class Csoundo {
 		}
 	}
 }
-
-
-
 
 
 

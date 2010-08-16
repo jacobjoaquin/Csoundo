@@ -1,4 +1,7 @@
 <CsoundSynthesizer>
+<CsOptions>
+-d -odac /Users/clu/Documents/workspace/Csoundo/examples/events/data/temp.csd
+</CsOptions>
 <CsInstruments>
 sr = 44100
 kr = 1470
@@ -42,5 +45,6 @@ endin
 </CsInstruments>
 <CsScore>
 i 1 0 [60 * 60 * 24]
+
 </CsScore>
 </CsoundSynthesizer>
