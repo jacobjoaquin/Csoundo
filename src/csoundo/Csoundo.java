@@ -25,10 +25,8 @@
 
 package csoundo;
 
-import java.io.*;
 import processing.core.*;
 import csnd.*;
-
 
 /**
  * @example chnInOut
@@ -41,29 +39,16 @@ public class Csoundo {
 
 	private boolean useThreads = true;
 	private String csd;
+	private String path;
+	
 	public boolean isRunning = false;
 
+	private Engine engine;
 	private CppSound csound;
-	public CsoundFile csoundFile;
-	public CsoundPerformanceThread perfThread;
+	private CsoundPerformanceThread perfThread;	
+	private SWIGTYPE_p_CSOUND_ csound_p;
+	private SWIGTYPE_p_void mutex;
 	
-	public SWIGTYPE_p_CSOUND_ csound_p;
-	SWIGTYPE_p_void mutex;
-	
-	/**
-	 * The Csoundo onstructor, usually called in the setup() method in your
-	 * sketch to initialize and start the library.
-	 * 
-	 * @param theParent
-	 */
-	public Csoundo(PApplet theParent) {
-		myParent = theParent;
-		welcome();
-		myParent.registerDispose(this);
-		myParent.registerPre(this);
-		myParent.registerPost(this);
-	}
-
 	/**
 	 * The Csoundo onstructor, usually called in the setup() method in your
 	 * sketch to initialize and start the library.
@@ -71,15 +56,16 @@ public class Csoundo {
 	 * @param theParent The PApplet. Usually pass 'this'
 	 * @param f The Csound file to run. Requires full absolute path.
 	 */
-	public Csoundo(PApplet theParent, String f) {
+	public Csoundo(PApplet theParent, String _csd) {
 		myParent = theParent;
 		welcome();
-
-		csound = new CppSound();
-		csd = f;
-
 		myParent.registerDispose(this);
 		myParent.registerPost(this);
+
+//		csound = new CppSound();
+		csd = myParent.sketchPath(_csd);
+		path = myParent.sketchPath("");
+		engine = new Engine(csd, path); 
 	}
 
 	public void dispose() {
@@ -104,60 +90,6 @@ public class Csoundo {
 		return VERSION;
 	}
 
-	private void cppSoundPerf() {
-		// TODO: Make sure csound isn't already running
-		if (true) {
-			csnd.csoundInitialize(null, null,
-					csnd.CSOUNDINIT_NO_SIGNAL_HANDLER);
-			
-			csound = new CppSound();
-			csound_p = csound.getCsound();
-			
-			csoundFile = csound.getCsoundFile();
-			csoundFile.setCSD(fileToString(csd));
-			
-			// TODO: csd should get unique names, in case of multiple
-			//       instances.
-			String tempCSD = "temp.csd";
-			csoundFile.setCommand("-d -odac " + myParent.dataPath("") +
-					              tempCSD);
-			
-			csoundFile.exportForPerformance();
-			int compile = csound.compile();
-			System.out.println("compile status: " + compile);
-			
-			if (compile == 0) {
-				isRunning = true;
-				perfThread = new CsoundPerformanceThread(csound_p);
-				perfThread.Play();
-				mutex = csnd.csoundCreateMutex(1);
-			}
-		}
-	}
-	
-	/**
-	 * Reads a csd file into a string
-	 */
-	private String fileToString(String path) {
-		FileInputStream fin;
-		StringBuilder sb = new StringBuilder();
-		
-		try {
-		    fin = new FileInputStream(csd);
-		    BufferedReader d = new BufferedReader(new InputStreamReader(fin));
-		    String line;
-		    while ((line = d.readLine()) != null) {
-		    		sb.append(line + "\n");
-		    }
-		    
-		    fin.close();		
-		} catch (IOException e) {
-			System.err.println ("Unable to read CSD file.");
-		}
-		
-		return sb.toString();
-	}
-	
 	/**
 	 * Creates a Csound score event.
 	 * 
@@ -185,7 +117,8 @@ public class Csoundo {
 	 */
 	public float getChn(String chn) {
 		if (isRunning) {
-			return csound.GetChannel(chn);
+		    return 0;
+			//return csound.GetChannel(chn);
 		}
 
 		return 0;
@@ -234,7 +167,12 @@ public class Csoundo {
 	 * starts the Csound engine.
 	 */
 	public void run() {
-		cppSoundPerf();
+		engine.start();
+		perfThread = engine.perfThread;
+		csound = engine.csound;
+		csound_p = engine.csound_p;
+		mutex = engine.mutex;
+		isRunning = engine.isRunning;
 	}
 
 	/**
@@ -242,8 +180,15 @@ public class Csoundo {
 	 */
 	public void setChn(String chn, float value) {
 		if (isRunning) {
-			csound.SetChannel(chn, value);
-		}
+            CsoundMYFLTArray myflt = new CsoundMYFLTArray();
+            int check = csnd.csoundGetChannelPtr(csound_p, myflt.GetPtr(), chn,
+                                                 csnd.CSOUND_CONTROL_CHANNEL |
+                                                 csnd.CSOUND_INPUT_CHANNEL);
+
+            if (check == 0) {
+                myflt.SetValue(0, value);
+            }
+        }
 	}
 
 	/**
