@@ -48,6 +48,8 @@ public class Csoundo {
 	public CsoundPerformanceThread perfThread;
 	
 	public SWIGTYPE_p_CSOUND_ csound_p;
+	SWIGTYPE_p_void mutex;
+	
 	/**
 	 * The Csoundo onstructor, usually called in the setup() method in your
 	 * sketch to initialize and start the library.
@@ -128,6 +130,7 @@ public class Csoundo {
 				isRunning = true;
 				perfThread = new CsoundPerformanceThread(csound_p);
 				perfThread.Play();
+				mutex = csnd.csoundCreateMutex(1);
 			}
 		}
 	}
@@ -164,12 +167,10 @@ public class Csoundo {
 		if (isRunning) {
 			
 			if (useThreads) {
-				SWIGTYPE_p_void thread = csnd.csoundCreateMutex(1);
-				csnd.csoundLockMutex(thread);
+				csnd.csoundLockMutex(mutex);
 				perfThread.InputMessage(s);
-				perfThread.FlushMessageQueue();
-				csnd.csoundUnlockMutex(thread);
-				csnd.csoundDestroyMutex(thread);
+//				perfThread.FlushMessageQueue();
+				csnd.csoundUnlockMutex(mutex);
 			} else {
 				perfThread.InputMessage(s);
 			}
@@ -268,11 +269,9 @@ public class Csoundo {
 	public float tableGet(int t, int i) {
 		if (isRunning) {
 			if (useThreads) {
-				SWIGTYPE_p_void thread = csnd.csoundCreateMutex(1);
-				csnd.csoundLockMutex(thread);
+				csnd.csoundLockMutex(mutex);
 				float value = csnd.csoundTableGet(csound_p, t, i);
-				csnd.csoundUnlockMutex(thread);
-				csnd.csoundDestroyMutex(thread);
+				csnd.csoundUnlockMutex(mutex);
 				return value;
 			} else {
 				return csnd.csoundTableGet(csound_p, t, i);
@@ -291,11 +290,9 @@ public class Csoundo {
 	public int tableLength(int t) {
 		if (isRunning) {
 			if (useThreads) {
-				SWIGTYPE_p_void thread = csnd.csoundCreateMutex(1);
-				csnd.csoundLockMutex(thread);
+				csnd.csoundLockMutex(mutex);
 				int value = csnd.csoundTableLength(csound_p, t);
-				csnd.csoundUnlockMutex(thread);
-				csnd.csoundDestroyMutex(thread);
+				csnd.csoundUnlockMutex(mutex);
 				return value;
 			} else {
 				return csnd.csoundTableLength(csound_p, t);
@@ -315,11 +312,9 @@ public class Csoundo {
 	public void tableSet(int t, int i, float v) {
 		if (isRunning) {
 			if (useThreads) {
-				SWIGTYPE_p_void thread = csnd.csoundCreateMutex(1);
-				csnd.csoundLockMutex(thread);
+				csnd.csoundLockMutex(mutex);
 				csnd.csoundTableSet(csound_p, t, i, v);
-				csnd.csoundUnlockMutex(thread);
-				csnd.csoundDestroyMutex(thread);
+				csnd.csoundUnlockMutex(mutex);
 			} else {
 				csnd.csoundTableSet(csound_p, t, i, v);
 			}
