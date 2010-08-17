@@ -44,7 +44,8 @@ public class Csoundo {
 	public boolean isRunning = false;
 
 	private Engine engine;
-	private CppSound csound;
+//    private CppSound csound;
+    private Csound csound;
 	private CsoundPerformanceThread perfThread;	
 	private SWIGTYPE_p_CSOUND_ csound_p;
 	private SWIGTYPE_p_void mutex;
@@ -117,8 +118,14 @@ public class Csoundo {
 	 */
 	public float getChn(String chn) {
 		if (isRunning) {
-		    return 0;
-			//return csound.GetChannel(chn);
+            if (useThreads) {
+                csnd.csoundLockMutex(mutex);
+                float value = csound.GetChannel(chn);
+                csnd.csoundUnlockMutex(mutex);
+                return value;
+            } else {
+                return csound.GetChannel(chn);
+            }
 		}
 
 		return 0;
@@ -178,9 +185,21 @@ public class Csoundo {
 	/**
 	 * Sets the value of the specified chn bus.
 	 */
-	public void setChn(String chn, float value) {
-		if (isRunning) {
-            CsoundMYFLTArray myflt = new CsoundMYFLTArray();
+    public void setChn(String chn, float value) {
+        if (isRunning) {
+            if (useThreads) {
+                csnd.csoundLockMutex(mutex);
+                csound.SetChannel(chn, value);
+                csnd.csoundUnlockMutex(mutex);
+            } else {
+                csound.SetChannel(chn, value);
+            }
+        }
+    }
+
+    public void setChnTest(String chn, float value) {
+        if (isRunning) {
+            CsoundMYFLTArray myflt = new CsoundMYFLTArray(4);
             int check = csnd.csoundGetChannelPtr(csound_p, myflt.GetPtr(), chn,
                                                  csnd.CSOUND_CONTROL_CHANNEL |
                                                  csnd.CSOUND_INPUT_CHANNEL);
@@ -189,7 +208,7 @@ public class Csoundo {
                 myflt.SetValue(0, value);
             }
         }
-	}
+    }
 
 	/**
 	 * Return the samplerate.
@@ -215,11 +234,11 @@ public class Csoundo {
 		if (isRunning) {
 			if (useThreads) {
 				csnd.csoundLockMutex(mutex);
-				float value = csnd.csoundTableGet(csound_p, t, i);
+				float value = csound.TableGet(t, i);
 				csnd.csoundUnlockMutex(mutex);
 				return value;
 			} else {
-				return csnd.csoundTableGet(csound_p, t, i);
+				return csound.TableGet(t, i);
 			}
 		}
 
@@ -232,39 +251,67 @@ public class Csoundo {
 	 * @param t Table number
 	 * @return Csound table length
 	 */
-	public int tableLength(int t) {
-		if (isRunning) {
-			if (useThreads) {
-				csnd.csoundLockMutex(mutex);
-				int value = csnd.csoundTableLength(csound_p, t);
-				csnd.csoundUnlockMutex(mutex);
-				return value;
-			} else {
-				return csnd.csoundTableLength(csound_p, t);
-			}
-		}
+    public int tableLength(int t) {
+        if (isRunning) {
+            if (useThreads) {
+                csnd.csoundLockMutex(mutex);
+                int value = csound.TableLength(t);
+                csnd.csoundUnlockMutex(mutex);
+                return value;
+            } else {
+                return csnd.csoundTableLength(csound_p, t);
+            }
+        }
 
-		return 0;
-	}
+        return 0;
+    }
 
-	/**
+    public int tableLengthTest(int t) {
+        if (isRunning) {
+            if (useThreads) {
+                csnd.csoundLockMutex(mutex);
+                int value = csnd.csoundTableLength(csound_p, t);
+                csnd.csoundUnlockMutex(mutex);
+                return value;
+            } else {
+                return csnd.csoundTableLength(csound_p, t);
+            }
+        }
+
+        return 0;
+    }
+
+
+    /**
 	 * Sets the value of a Csound table at a specif index.
 	 * 
 	 * @param t Table number
 	 * @param i Index
 	 * @param v Value
 	 */
-	public void tableSet(int t, int i, float v) {
-		if (isRunning) {
-			if (useThreads) {
-				csnd.csoundLockMutex(mutex);
-				csnd.csoundTableSet(csound_p, t, i, v);
-				csnd.csoundUnlockMutex(mutex);
-			} else {
-				csnd.csoundTableSet(csound_p, t, i, v);
-			}
-		}
-	}
+    public void tableSet(int t, int i, float v) {
+        if (isRunning) {
+            if (useThreads) {
+                csnd.csoundLockMutex(mutex);
+                csound.TableSet(t, i, v);
+                csnd.csoundUnlockMutex(mutex);
+            } else {
+                csound.TableSet(t, i, v);
+            }
+        }
+    }
+
+    public void tableSetTest(int t, int i, float v) {
+        if (isRunning) {
+            if (useThreads) {
+                csnd.csoundLockMutex(mutex);
+                csnd.csoundTableSet(csound_p, t, i, v);
+                csnd.csoundUnlockMutex(mutex);
+            } else {
+                csnd.csoundTableSet(csound_p, t, i, v);
+            }
+        }
+    }
 }
 
 

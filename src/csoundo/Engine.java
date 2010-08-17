@@ -34,10 +34,12 @@ public class Engine {
 	
 	public boolean isRunning = false;
 
-	public CppSound csound;
+//	public CppSound csound;
+	public Csound csound;
 	public CsoundFile csoundFile;
 	public CsoundPerformanceThread perfThread;
 	
+	public SWIGTYPE_p_void v;
 	public SWIGTYPE_p_CSOUND_ csound_p;
 	SWIGTYPE_p_void mutex;
 	
@@ -49,42 +51,42 @@ public class Engine {
 	 * @param f The Csound file to run. Requires full absolute path.
 	 */
 	public Engine(String _csd, String _path) {
-		csound = new CppSound();
+//		csound = new CppSound();
+	    csound = new Csound();
 		csd = _csd;
 		path = _path;
 	}
 	
-	private void cppSoundPerf() {
-		// TODO: Make sure csound isn't already running
-		if (true) {
-			csnd.csoundInitialize(null, null,
-					csnd.CSOUNDINIT_NO_SIGNAL_HANDLER);
-			
-			csound = new CppSound();
-			csound_p = csound.getCsound();
-			
-			csoundFile = csound.getCsoundFile();
-			csoundFile.setCSD(fileToString(csd));
-			
-			// TODO: csd should get unique names, in case of multiple
-			//       instances.
-			String tempCSD = "temp.csd";
-			csoundFile.setCommand("-d -odac " + path + tempCSD);
-			
-			csoundFile.exportForPerformance();
-			int compile = csound.compile();
-			System.out.println("compile status: " + compile);
-			
-			if (compile == 0) {
-				isRunning = true;
-				perfThread = new CsoundPerformanceThread(csound_p);
-				perfThread.Play();
-				mutex = csnd.csoundCreateMutex(1);
-			}
-		}
-	}
-	
-	/**
+    private void csoundPerf() {
+        // TODO: Make sure csound isn't already running
+        if (true) {
+            csnd.csoundInitialize(null, null,
+                    csnd.CSOUNDINIT_NO_SIGNAL_HANDLER);
+            
+            csound = new Csound();                        
+            csound_p = csound.GetCsound();
+            csoundFile = new CsoundFile();
+            csoundFile.setCSD(fileToString(csd));
+            
+            // TODO: csd should get unique names, in case of multiple
+            //       instances.
+            String tempCSD = "temp.csd";
+            csoundFile.setCommand("-d -odac " + path + tempCSD);            
+            csoundFile.exportForPerformance();
+
+            int compile = csound.Compile(path + tempCSD);
+            System.out.println("compile status: " + compile);
+            
+            if (compile == 0) {
+                isRunning = true;
+                perfThread = new CsoundPerformanceThread(csound_p);
+                perfThread.Play();
+                mutex = csnd.csoundCreateMutex(1);
+            }
+        }
+    }
+
+    /**
 	 * Reads a csd file into a string
 	 */
 	private String fileToString(String path) {
@@ -108,10 +110,42 @@ public class Engine {
 	}
 
 	public void start() {
-		cppSoundPerf();
+//        cppSoundPerf();
+        csoundPerf();
 	}
 }
 
+/*  
+private void cppSoundPerf() {
+    // TODO: Make sure csound isn't already running
+    if (true) {
+        csnd.csoundInitialize(null, null,
+                csnd.CSOUNDINIT_NO_SIGNAL_HANDLER);
+        
+        csound = new CppSound();
+        csound_p = csound.getCsound();
+        
+        csoundFile = csound.getCsoundFile();
+        csoundFile.setCSD(fileToString(csd));
+        
+        // TODO: csd should get unique names, in case of multiple
+        //       instances.
+        String tempCSD = "temp.csd";
+        csoundFile.setCommand("-d -odac " + path + tempCSD);
+        
+        csoundFile.exportForPerformance();
+        int compile = csound.compile();
+        System.out.println("compile status: " + compile);
+        
+        if (compile == 0) {
+            isRunning = true;
+            perfThread = new CsoundPerformanceThread(csound_p);
+            perfThread.Play();
+            mutex = csnd.csoundCreateMutex(1);
+        }
+    }
+}
+*/
 
 
 
