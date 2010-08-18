@@ -5,22 +5,26 @@ Csoundo cs;
 void setup() {
     size(720, 480);
     frameRate(30);
-    background(0);
+    smooth();
         
     cs = new Csoundo(this, "data/synth.csd");
     cs.run();
-    
+    println("perf status:  " + cs.getPerfStatus());
     cs.tableSet(1, 2048, -1.0);
 }
 
 void draw() {
-    if (frameCount % 9 == 0) {
-        cs.event("i 2 0 0.3 0.5 " + (random(440.0) + 440));
-    }
+    background(0);
+    noStroke();
+    fill(random(255));
+    ellipseMode(RADIUS);
+    ellipse(width / 2, height / 2, 50, 50);
     
-    println(cs.tableLength(1));
-    
-    if (frameCount % 5 == 0) {
-        cs.setChn("amp", random(1.0));
+    cs.kLock();
+    if (frameCount % 30 == 0) {
+        cs.event("i 2 0   0.3 0.5 440");
+        cs.event("i 2 0.1 0.3 0.5 880");
     }
+    cs.kUnlock();
+    
 }

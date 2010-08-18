@@ -24,7 +24,7 @@ void draw() {
 //    fill(r, r, 196);
 
     println("before");
-    float size = pow(2, 11);
+    float size = pow(2, 7);
     println(size);
     cs.event("f 20 0 " + size + " 10 0");
     println("after");

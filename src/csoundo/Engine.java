@@ -41,7 +41,7 @@ public class Engine {
 	
 	public SWIGTYPE_p_void v;
 	public SWIGTYPE_p_CSOUND_ csound_p;
-	SWIGTYPE_p_void mutex;
+//	SWIGTYPE_p_void mutex;
 	
 	/**
 	 * The Engine constructor, usually called in the setup() method in your
@@ -81,7 +81,7 @@ public class Engine {
                 isRunning = true;
                 perfThread = new CsoundPerformanceThread(csound_p);
                 perfThread.Play();
-                mutex = csnd.csoundCreateMutex(1);
+                //mutex = csnd.csoundCreateMutex(1);
             }
         }
     }
