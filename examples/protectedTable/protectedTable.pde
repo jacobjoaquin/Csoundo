@@ -3,7 +3,7 @@ import csoundo.*;
 Csoundo cs;
 
 void setup() {
-    size(1600, 1200);
+    size(740, 480);
     frameRate(30);
     smooth();
     background(0);

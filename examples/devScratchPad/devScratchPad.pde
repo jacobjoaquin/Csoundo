@@ -10,7 +10,7 @@ void setup() {
     cs = new Csoundo(this, "data/synth.csd");
     cs.run();
     
-    cs.tableSetTest(1, 2048, -1.0);
+    cs.tableSet(1, 2048, -1.0);
 }
 
 void draw() {
@@ -18,7 +18,7 @@ void draw() {
         cs.event("i 2 0 0.3 0.5 " + (random(440.0) + 440));
     }
     
-    println(cs.tableLengthTest(1));
+    println(cs.tableLength(1));
     
     if (frameCount % 5 == 0) {
         cs.setChn("amp", random(1.0));

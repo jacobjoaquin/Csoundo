@@ -72,6 +72,11 @@ public class Csoundo {
 	public void dispose() {
 		System.out.println("Csound dispose");
 		// TODO: Shut down Csound properly.
+
+		csound.Stop();
+		csnd.csoundDestroy(csound_p);
+		csound.Cleanup();
+		
 	}
 
 	public void pre() { }
@@ -182,9 +187,9 @@ public class Csoundo {
 		isRunning = engine.isRunning;
 	}
 
-	/**
-	 * Sets the value of the specified chn bus.
-	 */
+    /**
+     * Sets the value of the specified chn bus.
+     */
     public void setChn(String chn, float value) {
         if (isRunning) {
             if (useThreads) {
@@ -197,6 +202,23 @@ public class Csoundo {
         }
     }
 
+    /**
+     * Sets the string of the specified chn bus.
+     */
+    public void setChn(String chn, String sValue) {
+        // TODO: Untested. Need to figure out how to get a string.
+        if (isRunning) {
+            if (useThreads) {
+                csnd.csoundLockMutex(mutex);
+                csound.SetChannel(chn, sValue);
+                csnd.csoundUnlockMutex(mutex);
+            } else {
+                csound.SetChannel(chn, sValue);
+            }
+        }
+    }
+
+    /* TODO: Try to get this working, even if unnecessary.
     public void setChnTest(String chn, float value) {
         if (isRunning) {
             CsoundMYFLTArray myflt = new CsoundMYFLTArray(4);
@@ -209,7 +231,8 @@ public class Csoundo {
             }
         }
     }
-
+     */
+    
 	/**
 	 * Return the samplerate.
 	 * 
@@ -266,22 +289,6 @@ public class Csoundo {
         return 0;
     }
 
-    public int tableLengthTest(int t) {
-        if (isRunning) {
-            if (useThreads) {
-                csnd.csoundLockMutex(mutex);
-                int value = csnd.csoundTableLength(csound_p, t);
-                csnd.csoundUnlockMutex(mutex);
-                return value;
-            } else {
-                return csnd.csoundTableLength(csound_p, t);
-            }
-        }
-
-        return 0;
-    }
-
-
     /**
 	 * Sets the value of a Csound table at a specif index.
 	 * 
@@ -301,16 +308,12 @@ public class Csoundo {
         }
     }
 
-    public void tableSetTest(int t, int i, float v) {
+    public float get0dBFS() {
         if (isRunning) {
-            if (useThreads) {
-                csnd.csoundLockMutex(mutex);
-                csnd.csoundTableSet(csound_p, t, i, v);
-                csnd.csoundUnlockMutex(mutex);
-            } else {
-                csnd.csoundTableSet(csound_p, t, i, v);
-            }
+            return csound.Get0dBFS();
         }
+
+        return 0;
     }
 }
 
