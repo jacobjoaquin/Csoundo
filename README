@@ -75,9 +75,8 @@ yoursketchbook/libraries/csoundo/library
 Alternatively, you can create a symbolic link using the terminal
 app.
 
-$ cd yoursketchbook/libraries/csoundo/library $ ln -s
-/Library/Frameworks/CsoundLib.framework/Resources/Java/csnd.jar
-csnd.jar
+$ cd yoursketchbook/libraries/csoundo/library
+$ ln -s /Library/Frameworks/CsoundLib.framework/Resources/Java/csnd.jar csnd.jar
 
 
 
@@ -105,9 +104,8 @@ yoursketchbook/libraries/csoundo/library
 
 To create a symbolic link:
 
-$ cd yoursketchbook/libraries/csoundo/library $ ln -s
-/Library/Frameworks/CsoundLib.framework/Resources/Java/csnd.jar
-csnd.jar
+$ cd yoursketchbook/libraries/csoundo/library
+$ ln -s /Library/Frameworks/CsoundLib.framework/Resources/Java/csnd.jar csnd.jar
 
 
 4) Make modifications to the 'processing' lauch script.
@@ -126,8 +124,7 @@ OPCODEDIR=/usr/local/lib/csound/plugins log OPCODEDIR
 B. Replace the last line "java processing.app.Base "$SKETCH" &" to
 the following:
 
-java -Djava.library.path=/usr/local/lib processing.app.Base "$SKETCH"
-&
+java -Djava.library.path=/usr/local/lib processing.app.Base "$SKETCH" &
 
 
 Thanks to Rory Walsh for this info.
