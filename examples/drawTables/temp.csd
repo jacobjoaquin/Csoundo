@@ -1,6 +1,6 @@
 <CsoundSynthesizer>
 <CsOptions>
--d -odac /Users/clu/Documents/workspace/Csoundo/examples/drawTables/temp.csd
+-g -odac /Users/clu/Documents/workspace/Csoundo/examples/drawTables/temp.csd
 </CsOptions>
 <CsInstruments>
 sr = 44100

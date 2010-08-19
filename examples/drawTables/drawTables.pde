@@ -1,3 +1,14 @@
+/*
+ * Demonstrates reading values from an f-table and how to format f-tables
+ * into nice looking graphics. Perfect for the class room, papers and blogs.
+ *
+ * This example can be modified to output scalable vector graphics (SVG)
+ * to use in programs such as illustrator. See the PDF Library for details.
+ * 
+ * Example by Jacob Joaquin
+ */
+
+
 import csoundo.*;
 
 Csoundo cs;
@@ -7,7 +18,7 @@ void setup() {
     smooth();
     noLoop();
     
-    cs = new Csoundo(this, sketchPath("data/synth.csd"));
+    cs = new Csoundo(this, "data/synth.csd");
     cs.run();
 }
 

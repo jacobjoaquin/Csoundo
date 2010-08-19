@@ -1,6 +1,6 @@
 <CsoundSynthesizer>
 <CsOptions>
--d -odac /Users/clu/Documents/workspace/Csoundo/examples/playMessage/temp.csd
+-g -odac /Users/clu/Documents/workspace/Csoundo/examples/playMessage/temp.csd
 </CsOptions>
 <CsInstruments>
 sr = 44100

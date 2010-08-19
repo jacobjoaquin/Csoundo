@@ -27,39 +27,47 @@ package csoundo;
 
 import csnd.*;
 
+/**
+ * Experimental class for thread locking/memory protection.
+ */
 public class Mutex {
-    
-    SWIGTYPE_p_void m;
-    int instances = 0;
-    private boolean useThreads = true;
-    
-    public void cleanup() {
-        if (!useThreads) return;
-        while (instances > 0) {
-            unlock();
-        }
-    }
+    // FIXME: My tests have confirmed that I have no idea what I'm doing
+    //        here.
 
+    SWIGTYPE_p_void m;                // Mutex
+    private int locks = 0;            // Number of active locks
+    private boolean useLocks = true;  // Use locks?
+    
     public Mutex() {
         m = csnd.csoundCreateMutex(1);        
     }
 
+    public int activeThreads() {
+        return locks;
+    }
+
+    public void cleanup() {
+        if (!useLocks) return;
+        while (locks > 0) {
+            unlock();
+        }
+    }
+
     public void lock() {
-        if (!useThreads) return;
+        if (!useLocks) return;
         csnd.csoundLockMutex(m);
-        instances++;
+        locks++;
     }
     
     public void unlock() {
-        if (!useThreads) return;
-        if (instances > 0) {
-            instances--;
+        if (!useLocks) return;
+        if (locks > 0) {
+            locks--;
             csnd.csoundUnlockMutex(m);
         } else {
             System.out.println("Warning: Mutex trying to unlock imaginary threads.");
         }
     }
-    
 }
 
 

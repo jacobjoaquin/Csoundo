@@ -1,3 +1,10 @@
+/*
+ * Create i-events using the cs.event() method. For example:
+ *     cs.event("i 2 0 0.25 0.4 880");
+ * 
+ * Example by Jacob Joaquin
+ */
+
 import csoundo.*;
 
 Csoundo cs;
@@ -10,7 +17,7 @@ void setup() {
     background(0);
     noStroke();
     
-    cs = new Csoundo(this, sketchPath("data/synth.csd"));
+    cs = new Csoundo(this, "data/synth.csd");
     cs.run();
 }
 

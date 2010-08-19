@@ -1,9 +1,15 @@
+/*
+ * Demonstrates running a Csound composition.
+ * 
+ * Message From Another Planet by Jacob Joaquin
+ */
+
 import csoundo.*;
 
 Csoundo cs;
 
 void setup() {
-    size(1600, 1200);
+    size(740, 480);
     background(0);
     noLoop();
         
@@ -11,6 +17,4 @@ void setup() {
     cs.run();
 }
 
-void draw() {
-
-}
+void draw() { }

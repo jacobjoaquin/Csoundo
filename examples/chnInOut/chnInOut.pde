@@ -1,3 +1,10 @@
+/*
+ * Demonstrates writing data to a csound channel (chn) bus then reading
+ * back the data. Move the mouse pointer around the screen.
+ *
+ * Example by Jacob Joaquin
+ */
+
 import csoundo.*;
 
 Csoundo cs;
@@ -7,18 +14,18 @@ void setup() {
     frameRate(30);
     smooth();
 
-    cs = new Csoundo(this, sketchPath("data/synth.csd"));
+    cs = new Csoundo(this, "data/synth.csd");
     cs.run();
 }
 
 void draw() {
     background(0);
     
-    /* Send mouse position to Csound chn busses */
+    // Send mouse position to Csound chn busses
     cs.setChn("mouse_x", mouseX / (float) width);
     cs.setChn("mouse_y", (1 - (mouseY / (float) height)));
     
-    /* Read chn busses */
+    // Read chn busses
     float mx = cs.getChn("mouse_x");
     float my = cs.getChn("mouse_y");
     

@@ -1,2 +1,141 @@
-'Csoundo' is a Processing library for Csound. 
+'Csoundo' is a Csound library for Processing.
+
+Copyright (c) 2010 Jacob Joaquin
+jacobjoaquin@gmail.com
+http://csoundblog.com/
+
+Note
+----
+Csoundo development is in early Alpha. Though people have been successful in running Csoundo on Linux, OS X and Windows, there are still many issues that are preventing people from getting Csoundo to work on their computers. For example, Csoundo only works with the floats version of Csoundo, not doubles. (see "Known Issues" at the end)
+
+
+
+What is Processing?
+-------------------
+
+"Processing is an open source programming language and environment for people who want to create images, animations, and interactions. Initially developed to serve as a software sketchbook and to teach fundamentals of computer programming within a visual context, Processing also has evolved into a tool for generating finished professional work. Today, tens of thousands of students, artists, designers, researchers, and hobbyists who use Processing for learning, prototyping, and production."
+
+http://processing.org/
+
+
+
+What is Csound?
+---------------
+
+"Csound is a sound and music synthesis system, providing facilities for composition and performance over a wide range of platforms. It is not restricted to any style of music, having been used for many years in the creation of classical, pop, techno, ambient, experimental, and (of course) computer music, as well as music for film and television."
+
+http://csound.sourceforge.net/
+
+
+
+Running on OS X
+---------------
+1) Install Csound.
+
+Only one version of the pre-built Csound binaries has been confirmed to work on OS X, and only confirmed to work on Intel machines:
+
+csound5.12.4-OSX10.5-Universal.dmg
+http://sourceforge.net/projects/csound/files/csound5/csound5.12/csound5.12.4-OSX10.5-Universal.dmg/download
+
+
+2) Copy the Csoundo folder into your Processing 'libraries' folder. See instructions at Processing.org:
+
+http://wiki.processing.org/w/How_to_Install_a_Contributed_Library
+
+
+3) Copy or make a symlink to the csnd.jar file. The csnd.jar is located here:
+
+/Library/Frameworks/CsoundLib.framework/Resources/Java/csnd.jar
+
+Make a copy of csnd.jar in this folder:
+
+yoursketchbook/libraries/csoundo/library
+
+Alternatively, you can create a symbolic link using the terminal app.
+
+$ cd yoursketchbook/libraries/csoundo/library
+$ ln -s /Library/Frameworks/CsoundLib.framework/Resources/Java/csnd.jar csnd.jar
+
+
+
+Running on Linux
+----------------
+
+I do not have linux installed. If you have better instructions, please email me, and I will incorporate them into the Csoundo knowledge base.
+
+1) Install Csound:
+
+http://csound.sourceforge.net/
+
+
+2) Copy the Csoundo folder into your Processing 'libraries' folder. See instructions at Processing.org:
+
+http://wiki.processing.org/w/How_to_Install_a_Contributed_Library
+
+
+3) Copy or make a symlink to the csnd.jar here:
+
+yoursketchbook/libraries/csoundo/library
+
+To create a symbolic link:
+
+$ cd yoursketchbook/libraries/csoundo/library
+$ ln -s /Library/Frameworks/CsoundLib.framework/Resources/Java/csnd.jar csnd.jar
+
+
+4) Make modifications to the 'processing' lauch script.
+
+There is currently one known method for running Csoundo on linux. That is, to make to modifications to the 'processing' launcher script in the root folder of Processing.
+
+A. Towards the very end, right before the line "# Start Processing in the same directory as this script", add this code (your csound plugins folder may vary):
+
+#make sure that OPCODEDIR is set..
+export OPCODEDIR=/usr/local/lib/csound/plugins
+log OPCODEDIR
+
+B. Replace the last line "java processing.app.Base "$SKETCH" &" to the following:
+
+java -Djava.library.path=/usr/local/lib processing.app.Base "$SKETCH" &
+
+
+Thanks to Rory Walsh for this info.
+
+
+
+Running on Windows
+------------------
+
+There have been reports of Csoundo working on various versions of Windows. I do not have Windows installed. If you have better instructions, please email me, and I will incorporate them into the Csoundo knowledge base. 
+
+1) Install Csound:
+
+http://csound.sourceforge.net/
+
+
+2) Copy the Csoundo folder into your Processing 'libraries' folder. See instructions at Processing.org:
+
+http://wiki.processing.org/w/How_to_Install_a_Contributed_Library
+
+
+3) Copy the csnd.jar here:
+
+yoursketchbook/libraries/csoundo/library
+
+
+
+Known Issues
+------------
+
+* Csound Doubles is not yet supported. To find out which version you are running, run csound, and about 5 lines down, you'll get a message like this: "Csound version 5.12 (float samples) Jun  4 2010"
+
+To track other issues, go here:
+
+http://github.com/jacobjoaquin/Csoundo/issues
+
+
+
+
+
+
+
 

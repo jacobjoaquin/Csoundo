@@ -1,4 +1,10 @@
-import csoundo.*;
+/*
+ * Demonstrates how to use information about a running Csound process.
+ * 
+ * Example by Jacob Joaquin
+ */
+ 
+ import csoundo.*;
 
 Csoundo cs;
 PFont font;
@@ -16,10 +22,11 @@ void setup() {
 }
 
 void draw() {
-    translate(30, height - 150);
+    translate(30, height - 180);
     text("Sample rate:   " + cs.sr(), 0, 0);
     text("Control rate:  " + cs.kr(), 0, 30);
     text("Ksmps:         " + cs.ksmps(), 0, 60);
     text("Channels:      " + cs.nchnls(), 0, 90);
-    text("0dBfs:         " + cs.get0dBFS(), 0, 120);
+    text("0dBfs:         " + cs.get0dBFS(), 0, 120); 
+    text("Options:       " + cs.getOptions(), 0, 150); 
 }

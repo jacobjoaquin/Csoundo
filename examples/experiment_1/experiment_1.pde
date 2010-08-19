@@ -1,4 +1,10 @@
-import csoundo.*;
+/*
+ * Something between a lava lamp and a wind chime.
+ * 
+ * Example by Jacob Joaquin
+ */
+ 
+ import csoundo.*;
 
 Net net;
 Csoundo cs;
@@ -25,7 +31,7 @@ void setup() {
     net = new Net(N_NODES, MIN_NODE_SIZE, MAX_NODE_SIZE);
 
     if (IS_SOUND_ON) {
-        cs = new Csoundo(this, sketchPath("data/synth.csd"));
+        cs = new Csoundo(this, "data/synth.csd");
         cs.run();
     }
 }

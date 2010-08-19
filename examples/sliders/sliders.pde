@@ -1,4 +1,14 @@
-import controlP5.*;
+/*
+ * A bank of seven sliders controlling an FM synthesizer (foscil). The
+ * sliders are generated using the controlP5 library by Andreas Schlegel.
+ * Great for old school lasers and UFOs.
+ *
+ * Downlaod controlP5: http://www.sojamo.de/libraries/controlP5/
+ *
+ * Example by Jacob Joaquin
+ */
+ 
+ import controlP5.*;
 import csoundo.*;
 
 ControlP5 controlP5;
@@ -10,7 +20,7 @@ void setup() {
     smooth();
 
     controlP5 = new ControlP5(this);
-    cs = new Csoundo(this, sketchPath("data/synth.csd"));
+    cs = new Csoundo(this, "data/synth.csd");
     cs.run();
 
     // Set default values in Csound chn bus memory

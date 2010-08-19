@@ -1,6 +1,6 @@
 <CsoundSynthesizer>
 <CsOptions>
--d -odac /Users/clu/Documents/workspace/Csoundo/examples/random/temp.csd
+-g -odac /Users/clu/Documents/workspace/Csoundo/examples/random/temp.csd
 </CsOptions>
 <CsInstruments>
 sr = 44100

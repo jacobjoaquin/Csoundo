@@ -33,7 +33,7 @@ import csnd.*;
  */	
 
 
-public class Csoundo {
+public class Csoundo{
 	PApplet myParent;
 	public final static String VERSION = "##version##";
 
@@ -45,7 +45,6 @@ public class Csoundo {
 	private Engine engine;
     private Csound csound;
 	private CsoundPerformanceThread perfThread;	
-//	private SWIGTYPE_p_CSOUND_ csound_p;
 	private Mutex mutex;
 	
 	/**
@@ -89,7 +88,9 @@ public class Csoundo {
 
 	public void pre() { }
 
-	public void post() { }
+	public void post() {
+	    mutex.cleanup();  // Closes any mutex locks left open from lock()
+	}
 
 	private void welcome() {
 		System.out.println("##name## ##version## by ##author##");
@@ -103,7 +104,7 @@ public class Csoundo {
 	public static String version() {
 		return VERSION;
 	}
-
+	
 	/**
 	 * Creates a Csound score event.
 	 * 
@@ -111,11 +112,18 @@ public class Csoundo {
 	 */
 	public void event(String s) {
         if (!isRunning) return;
+        // TODO: Is mutex needed if csoundPerformanceThread.InputMessage()
+        //       is already thread safe? Does it use mutex?
         mutex.lock();
         perfThread.InputMessage(s);
         mutex.unlock();
 	}
 
+    /**
+     * Returns the 0dbfs value, set in the orchestra header.
+     * 
+     * @return 0dbfs
+     */
     public float get0dBFS() {
         if (!isRunning) return 0;
         return csound.Get0dBFS();
@@ -134,18 +142,27 @@ public class Csoundo {
         return value;
 	}
 
+    /**
+     * Returns the command-line options string.
+     * 
+     * @return command-line options
+     */
+	public String getOptions() {
+	    return engine.options;
+	}
+	
+    /**
+     * Returns the status of csoundPerformanceThread.
+     * 
+     * NOTE: This is for Csoundo development and is likely to disappear
+     * or be renamed.
+     * 
+     * @return status
+     */
 	public int getPerfStatus() {
+	    // TODO: Make ENUMS, not magic numbers
         if (!isRunning) return -99999;
         return perfThread.GetStatus();
-	}
-	
-	
-	public void kLock() {
-        mutex.lock();
-	}
-	
-	public void kUnlock() {
-        mutex.unlock();
 	}
 	
 	/**
@@ -164,10 +181,18 @@ public class Csoundo {
 	 * @return ksmps
 	 */
 	public float ksmps() {
+	    // TODO: Throw exceptions, not magic numbers.
         if (!isRunning) return 0;
         return csound.GetKsmps();
 	}
 
+    /**
+     * Lock mutex. Experimental.
+     */
+    public void lock() {
+        mutex.lock();
+    }
+    
 	/**
 	 * Return the number or audio output channels.
 	 * 
@@ -188,7 +213,7 @@ public class Csoundo {
 		    System.out.println("Waiting for csoundPerformanceThread");
 		}
 		csound = engine.csound;
-		mutex = new Mutex();
+		mutex = engine.mutex;
 		isRunning = engine.isRunning;
 	}
 
@@ -227,6 +252,19 @@ public class Csoundo {
         }
     }
      */
+    
+    /**
+     * Overwrites the Csound options.
+     * 
+     * Default options are '-g -odac' where -g sets graphics to display
+     * as ascii characters in the console output and -odac means to send
+     * audio to the default digital-audio-converter.
+     * 
+     * @param Command-line string
+     */
+    public void setOptions(String s) {
+        engine.options = s;
+    }
     
 	/**
 	 * Return the samplerate.
@@ -282,13 +320,10 @@ public class Csoundo {
         mutex.unlock();
     }
 
+    /**
+     * Unlock mutex. Experimental.
+     */
+    public void unlock() {
+        mutex.unlock();
+    }
 }
-
-
-
-
-
-
-
-
-
