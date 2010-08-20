@@ -35,6 +35,7 @@ public class Engine {
 	private String csd;
 	private String path;
 	public String options = "-g -odac";
+    private String tempCSD = "__CSOUNDO__.csd";
 	
 	public boolean isRunning = false;
 
@@ -75,7 +76,6 @@ public class Engine {
             
             // TODO: csd should get unique names, in case of multiple
             //       instances.
-            String tempCSD = "temp.csd";
             csoundFile.setCommand(options + " " + path + tempCSD);            
             csoundFile.exportForPerformance();
 

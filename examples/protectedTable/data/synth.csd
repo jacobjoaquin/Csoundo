@@ -7,7 +7,6 @@ nchnls = 1
 0dbfs = 1
 
 gi_sin ftgen 1, 0, 8192, 10, 1
-;gi_foo ftgen 20, 0, 8192, 10, 1
 
 instr 1
     ; Keep Csound running
@@ -23,22 +22,6 @@ instr 2
     
     out a1
 endin
-
-instr 3
-    turnoff2 4, 0, 0
-    turnoff
-endin
-
-instr 4
-    idur = p3
-    iamp = p4
-    ifreq = p5
-    
-    a1 foscil iamp, ifreq, 1, 2, 1, gi_sin
-    
-    out a1
-endin
-
 
 </CsInstruments>
 <CsScore>
