@@ -17,7 +17,7 @@ void setup() {
     background(0);
     noStroke();
     
-    cs = new Csoundo(this, "data/synth.csd");
+    cs = new Csoundo(this, "events.csd");
     cs.run();
 }
 

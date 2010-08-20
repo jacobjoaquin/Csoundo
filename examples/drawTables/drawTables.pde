@@ -18,7 +18,7 @@ void setup() {
     smooth();
     noLoop();
     
-    cs = new Csoundo(this, "data/synth.csd");
+    cs = new Csoundo(this, "drawTables.csd");
     cs.run();
 }
 

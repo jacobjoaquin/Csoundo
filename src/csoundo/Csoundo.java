@@ -48,8 +48,11 @@ public class Csoundo{
 	private Mutex mutex;
 	
 	/**
-	 * The Csoundo onstructor, usually called in the setup() method in your
-	 * sketch to initialize and start the library.
+	 * The Csoundo constructor, usually called in the setup() method in your
+	 * sketch. Only supports 1 csd file for now, regardless of the number
+	 * of instances of Csoundo you are running. Your Csound csd file must
+	 * reside in the /data folder of your sketch. A temporary CSD file called
+	 * __CSOUNDO__.csd is created in your /data folder.
 	 * 
 	 * @param theParent The PApplet. Usually pass 'this'
 	 * @param f The Csound file to run. Requires full absolute path.
@@ -60,8 +63,8 @@ public class Csoundo{
 		myParent.registerDispose(this);
 		myParent.registerPost(this);
 
-		csd = myParent.sketchPath(_csd);
-		path = myParent.sketchPath("");
+        path = myParent.dataPath("");
+		csd = myParent.dataPath(path + _csd);
 		engine = new Engine(csd, path); 
 	}
 

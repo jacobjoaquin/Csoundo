@@ -10,7 +10,7 @@ void setup() {
     size(720, 480);
     noLoop();
         
-    cs = new Csoundo(this, "data/synth.csd");
+    cs = new Csoundo(this, "devScratchPad.csd");
     cs.run();
 }
 

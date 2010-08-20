@@ -17,7 +17,7 @@ void setup() {
     font = loadFont("Courier-24.vlw");
     textFont(font);
     
-    cs = new Csoundo(this, "data/synth.csd");
+    cs = new Csoundo(this, "headerInfo.csd");
     cs.run();
 }
 

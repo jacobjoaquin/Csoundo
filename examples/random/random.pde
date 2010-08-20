@@ -15,7 +15,7 @@ void setup() {
     size(740, 480);
     frameRate(10);
     smooth();
-    cs = new Csoundo(this, "data/test.csd");
+    cs = new Csoundo(this, "random.csd");
     cs.run();
 }
 

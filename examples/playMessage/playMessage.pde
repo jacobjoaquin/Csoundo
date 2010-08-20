@@ -13,7 +13,7 @@ void setup() {
     background(0);
     noLoop();
         
-    cs = new Csoundo(this, "data/message_from_another_planet.csd");
+    cs = new Csoundo(this, "message_from_another_planet.csd");
     cs.run();
 }
 

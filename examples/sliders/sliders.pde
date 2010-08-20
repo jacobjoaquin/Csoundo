@@ -20,7 +20,7 @@ void setup() {
     smooth();
 
     controlP5 = new ControlP5(this);
-    cs = new Csoundo(this, "data/synth.csd");
+    cs = new Csoundo(this, "sliders.csd");
     cs.run();
 
     // Set default values in Csound chn bus memory

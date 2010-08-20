@@ -14,7 +14,7 @@ void setup() {
     frameRate(30);
     smooth();
 
-    cs = new Csoundo(this, "data/synth.csd");
+    cs = new Csoundo(this, "chnInOut.csd");
     cs.run();
 }
 
