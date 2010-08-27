@@ -86,7 +86,7 @@ public class Engine {
                 isRunning = true;
                 perfThread = new CsoundPerformanceThread(csound_p);
                 perfThread.Play();
-                mutex = new Mutex();
+                //mutex = new Mutex();
             }
         }
     }

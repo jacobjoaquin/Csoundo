@@ -15,6 +15,7 @@
 import csoundo.*;
 
 Csoundo cs;
+int bugs = 0;
 
 void setup() {
     size(740, 480);
@@ -31,22 +32,40 @@ void draw() {
     noStroke();
     fill(0, 8);
     rect(0, 0, width, height);
-        
+    
+    // Create empty table    
     float size = pow(2, 12);
     cs.event("f 20 0 " + size + " 10 0");
     int length = cs.tableLength(20);
-    float phase = (float) (frameCount % 60) / 60 * TWO_PI;
-
+    
+    // Increment phase of sine table input
+    int inc = 60;
+    float phase = (float) (frameCount % inc) / inc * TWO_PI;
+    
+    // Create, write, read and draw sine waveform 
     stroke(255, 255);
     beginShape();
-    for (int i = 0; i < length; i++) {
 
-        // Intentionally read backwards
-        cs.tableSet(20, length - i - 1, sin(2 * PI * (float) i *
-                   (random(0.0001) + 2.0) / (float) length  + phase));
+    for (int i = length - 1; i >= 0; i--) {
+    
+        // Generate sine data point and input into table
+        float input = sin(TWO_PI * (float) i / (float) length + phase);
+        cs.tableSet(20, length, input);
 
-        float v = cs.tableGet(20, length - i - 1);
-        vertex((float) i / (float) length * (float) width, height / 2.0 + height / 2.0 * v);
+        // Read the from the table at the same index
+        float output = cs.tableGet(20, length);
+        
+        // Print message if input != output
+        if (output != input) {
+            println(output + " != " + input + " @index " + i);
+            bugs++;
+            println("fail rate = " + ((float) bugs / (float) frameCount));
+        }
+
+        // Draw wave form
+        vertex((float) i / (float) (length - 1) * (float) width,
+               height / 2.0 + height / 2.0 * output);
+        
     }
     
     endShape();

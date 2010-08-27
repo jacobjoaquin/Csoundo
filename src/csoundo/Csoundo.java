@@ -33,7 +33,7 @@ import csnd.*;
  */	
 
 
-public class Csoundo{
+public class Csoundo extends Thread{
 	PApplet myParent;
 	public final static String VERSION = "##version##";
 
@@ -57,42 +57,35 @@ public class Csoundo{
 	 * @param theParent The PApplet. Usually pass 'this'
 	 * @param f The Csound file to run. Requires full absolute path.
 	 */
-	public Csoundo(PApplet theParent, String _csd) {
-		myParent = theParent;
-		welcome();
-		myParent.registerDispose(this);
-		myParent.registerPost(this);
+    public Csoundo(PApplet theParent, String _csd) {
+        myParent = theParent;
+        welcome();
+        myParent.registerDispose(this);
+        myParent.registerPost(this);
 
         path = myParent.dataPath("");
-		csd = myParent.dataPath(path + _csd);
-		engine = new Engine(csd, path); 
-	}
+        csd = myParent.dataPath(path + _csd);
+        engine = new Engine(csd, path);
+        
+    }
 
 	public void dispose() {
 		System.out.println("Csound dispose");
-		// TODO: Not satisified that Csound is shutdown properly.
+		// NOTE: 
 
-		perfThread.Stop();  // Calls csound.Cleanup() too
-        
-		System.out.println("perfThread waiting");
-        while(perfThread.GetStatus() == 0) { };
-        System.out.println("perfThread finished");
-
-/*
-        csound.Stop();
-
-        System.out.println("csnd.csoundDestroy()");        
-        csnd.csoundDestroy(csound_p);
-        while(csound != null) { }
-        System.out.println("csound finished");
-*/		
-		System.out.println("Csound dispose complete");
+	    perfThread.Stop();
+	    System.out.println("perfThread waiting");
+	    perfThread.Join();
+	    System.out.println("perfThread finished");
+	    csound.Cleanup();
+	    csound.delete();
+	    System.out.println("Csound dispose complete");		
 	}
 
 	public void pre() { }
 
 	public void post() {
-	    mutex.cleanup();  // Closes any mutex locks left open from lock()
+//	    mutex.cleanup();  // Closes any mutex locks left open from lock()
 	}
 
 	private void welcome() {
@@ -114,12 +107,12 @@ public class Csoundo{
 	 * @param s The score event. ie "i 1 0 1 0.707 440"
 	 */
 	public void event(String s) {
-        if (!isRunning) return;
+//        if (!isRunning) return;
         // TODO: Is mutex needed if csoundPerformanceThread.InputMessage()
         //       is already thread safe? Does it use mutex?
-        mutex.lock();
+//        mutex.lock();
         perfThread.InputMessage(s);
-        mutex.unlock();
+//        mutex.unlock();
 	}
 
     /**
@@ -128,7 +121,7 @@ public class Csoundo{
      * @return 0dbfs
      */
     public float get0dBFS() {
-        if (!isRunning) return 0;
+//        if (!isRunning) return 0;
         return csound.Get0dBFS();
     }
 
@@ -138,10 +131,10 @@ public class Csoundo{
 	 * @return chn bus value
 	 */
 	public float getChn(String chn) {
-        if (!isRunning) return 0;
-        mutex.lock();
+//        if (!isRunning) return 0;
+//        mutex.lock();
         float value = csound.GetChannel(chn);
-        mutex.unlock();
+//        mutex.unlock();
         return value;
 	}
 
@@ -164,7 +157,7 @@ public class Csoundo{
      */
 	public int getPerfStatus() {
 	    // TODO: Make ENUMS, not magic numbers
-        if (!isRunning) return -99999;
+//        if (!isRunning) return -99999;
         return perfThread.GetStatus();
 	}
 	
@@ -174,7 +167,7 @@ public class Csoundo{
 	 * @return krate
 	 */
 	public float kr() {
-        if (!isRunning) return 0;
+//        if (!isRunning) return 0;
         return csound.GetKr();
 	}
 
@@ -185,7 +178,7 @@ public class Csoundo{
 	 */
 	public float ksmps() {
 	    // TODO: Throw exceptions, not magic numbers.
-        if (!isRunning) return 0;
+//        if (!isRunning) return 0;
         return csound.GetKsmps();
 	}
 
@@ -202,7 +195,7 @@ public class Csoundo{
 	 * @return number of output channels
 	 */
 	public float nchnls() {
-        if (!isRunning) return 0;
+//        if (!isRunning) return 0;
         return csound.GetNchnls();
 	}
 
@@ -210,6 +203,8 @@ public class Csoundo{
 	 * starts the Csound engine.
 	 */
 	public void run() {
+	    super.run();
+	    System.out.println(getName());
 		engine.start();
 		perfThread = engine.perfThread;
 		while(perfThread.GetStatus() != 0) {
@@ -224,10 +219,10 @@ public class Csoundo{
      * Sets the value of the specified chn bus.
      */
     public void setChn(String chn, float value) {
-        if (!isRunning) return;
-        mutex.lock();
+//        if (!isRunning) return;
+//        mutex.lock();
         csound.SetChannel(chn, value);
-        mutex.unlock();
+//        mutex.unlock();
     }
 
     /**
@@ -235,10 +230,10 @@ public class Csoundo{
      */
     public void setChn(String chn, String sValue) {
         // TODO: Untested. Need to figure out how to get a string.
-        if (!isRunning) return;
-        mutex.lock();
+//        if (!isRunning) return;
+//        mutex.lock();
         csound.SetChannel(chn, sValue);
-        mutex.unlock();
+//        mutex.unlock();
     }
 
     /* TODO: Try to get this working, even if unnecessary.
@@ -275,7 +270,7 @@ public class Csoundo{
 	 * @return samplerate
 	 */
 	public float sr() {
-        if (!isRunning) return 0;
+//        if (!isRunning) return 0;
         return csound.GetSr();
 	}
 
@@ -288,10 +283,10 @@ public class Csoundo{
 	 */
 	public float tableGet(int t, int i) {
 	    // TODO: If sets are locked, do gets need to be?
-	    if (!isRunning) return 0;
-	    mutex.lock();
+//	    if (!isRunning) return 0;
+//	    mutex.lock();
 	    float value = csound.TableGet(t, i);
-	    mutex.unlock();
+//	    mutex.unlock();
 	    return value;
 	}
 
@@ -302,10 +297,10 @@ public class Csoundo{
 	 * @return Csound table length
 	 */
     public int tableLength(int t) {
-        if (!isRunning) return 0;
-        mutex.lock();
+//        if (!isRunning) return 0;
+//        mutex.lock();
         int value = csound.TableLength(t);
-        mutex.unlock();
+//        mutex.unlock();
         return value;
     }
 
@@ -317,10 +312,10 @@ public class Csoundo{
 	 * @param v Value
 	 */
     public void tableSet(int t, int i, float v) {
-        if (!isRunning) return;
-        mutex.lock();
+//        if (!isRunning) return;
+//        mutex.lock();
         csound.TableSet(t, i, v);
-        mutex.unlock();
+//        mutex.unlock();
     }
 
     /**

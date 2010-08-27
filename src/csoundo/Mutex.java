@@ -36,7 +36,7 @@ public class Mutex {
 
     SWIGTYPE_p_void m;                // Mutex
     private int locks = 0;            // Number of active locks
-    private boolean useLocks = true;  // Use locks?
+    private boolean useLocks = false;  // Use locks?
     
     public Mutex() {
         m = csnd.csoundCreateMutex(1);        
