@@ -315,6 +315,8 @@ public class Csoundo extends Thread{
 //        if (!isRunning) return;
 //        mutex.lock();
         csound.TableSet(t, i, v);
+        perfThread.SetProcessCallback(0, csndConstants.CSOUND_CONTROL_CHANNEL_LIN);
+        // csoundTableSet
 //        mutex.unlock();
     }
 
