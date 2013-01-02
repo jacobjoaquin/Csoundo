@@ -6,7 +6,7 @@
  * a filter for .jar libraries only required in Java Mode @line 472.
  * locating and moving .csd file from data folder to res/raw @line 370.
  * (All conditionally based so non-Csoundo sketches will still build)
- * 
+ *
  * @modifed by Conor Robotham 10/11/12
  */
 
@@ -71,6 +71,8 @@ class AndroidBuild extends JavaBuild
             return true;
         if(pkg.startsWith("processing.data."))
             return true;
+        if(pkg.startsWith("processing.event."))
+            return true;
         return pkg.startsWith("processing.opengl.");
     }
 
@@ -95,7 +97,8 @@ class AndroidBuild extends JavaBuild
             writeBuildXML(buildFile, sketch.getName());
             writeProjectProps(new File(tmpFolder, "project.properties"));
             writeLocalProps(new File(tmpFolder, "local.properties"));
-            writeRes(new File(tmpFolder, "res"), sketchClassName);
+            File resFolder = new File(tmpFolder, "res");
+            writeRes(resFolder, sketchClassName);
             File libsFolder = mkdirs(tmpFolder, "libs");
             File assetsFolder = mkdirs(tmpFolder, "assets");
             Base.copyFile(coreZipFile, new File(libsFolder, "processing-core.jar"));
@@ -104,6 +107,9 @@ class AndroidBuild extends JavaBuild
             File sketchDataFolder = sketch.getDataFolder();
             if(sketchDataFolder.exists())
                 Base.copyDir(sketchDataFolder, assetsFolder);
+            File sketchResFolder = new File(sketch.getFolder(), "res");
+            if(sketchResFolder.exists())
+                Base.copyDir(sketchResFolder, resFolder);
         }
         return tmpFolder;
     }
@@ -204,7 +210,7 @@ class AndroidBuild extends JavaBuild
         DefaultLogger consoleLogger = new DefaultLogger();
         consoleLogger.setErrorPrintStream(System.err);
         consoleLogger.setOutputPrintStream(System.out);
-        consoleLogger.setMessageOutputLevel(0);
+        consoleLogger.setMessageOutputLevel(2);
         p.addBuildListener(consoleLogger);
         DefaultLogger errorLogger = new DefaultLogger();
         ByteArrayOutputStream errb = new ByteArrayOutputStream();
@@ -213,7 +219,7 @@ class AndroidBuild extends JavaBuild
         ByteArrayOutputStream outb = new ByteArrayOutputStream();
         PrintStream outp = new PrintStream(outb);
         errorLogger.setOutputPrintStream(outp);
-        errorLogger.setMessageOutputLevel(4);
+        errorLogger.setMessageOutputLevel(2);
         p.addBuildListener(errorLogger);
         try
         {
@@ -252,7 +258,7 @@ class AndroidBuild extends JavaBuild
             if(pieces == null)
                 continue;
             String fileName = pieces[1];
-            fileName = fileName.substring(fileName.lastIndexOf('/') + 1);
+            fileName = fileName.substring(fileName.lastIndexOf(File.separatorChar) + 1);
             int lineNumber = PApplet.parseInt(pieces[2]) - 1;
             SketchException rex = placeException(pieces[3], fileName, lineNumber);
             if(rex != null)
@@ -260,11 +266,11 @@ class AndroidBuild extends JavaBuild
         }
 
         SketchException skex = new SketchException("Error from inside the Android tools, check the console.");
-        String arr2$[] = errLines;
-        int len2$ = arr2$.length;
-        for(int i$ = 0; i$ < len2$; i$++)
+        String arr1$[] = errLines;
+        int len1$ = arr1$.length;
+        for(int i1$ = 0; i1$ < len1$; i1$++)
         {
-            String line = arr2$[i$];
+            String line = arr1$[i1$];
             if(line.contains("Unable to resolve target 'android-10'"))
             {
                 System.err.println("Use the Android SDK Manager (under the Android");
@@ -325,21 +331,19 @@ class AndroidBuild extends JavaBuild
         writer.println();
         writer.println("# Suppress the javac task warnings about \"includeAntRuntime\"");
         writer.println("build.sysclasspath=last");
-        //Csoundo library requirement for Android Library Dependency
+         //Csoundo library requirement for Android Dependency(CsoundAndroid placed above)
         File sketchFolder = sketch.getFolder();
         File csdFile= new File(sketchFolder, "data/"+sketch.getName()+".csd");
         if(csdFile.exists()){
-            if(Base.isWindows()){
+            if(Base.isWindows())
                 writer.println("android.library.reference.1=..\\\\..\\\\..\\\\..\\\\My Documents\\\\Processing\\\\libraries\\\\CsoundAndroid");
-            }
-            else if(Base.isLinux()){
-                writer.println("android.library.reference.1=../../home/rory/sketchbook/libraries/CsoundAndroid");
-            }
+            if(Base.isLinux())
+                writer.println("android.library.reference.1=../CsoundAndroid");
         }
         writer.flush();
         writer.close();
     }
-    
+
     private void writeLocalProps(File file)
     {
         PrintWriter writer = PApplet.createWriter(file);
@@ -472,7 +476,7 @@ class AndroidBuild extends JavaBuild
                     String jarName = (new StringBuilder()).append(exportName.substring(0, exportName.length() - 4)).append(".jar").toString();
                     Base.copyFile(exportFile, new File(libsFolder, jarName));
                 } else
-                //Filter for Csoundo Library Android Mode
+                 //Filter for Csoundo Android Mode
                 if(!exportName.toLowerCase().equals("android.jar")&&!exportName.toLowerCase().equals("csnd.jar") && !exportName.toLowerCase().equals("csoundandroid.jar")){
                     if(exportName.toLowerCase().endsWith(".jar"))
                         Base.copyFile(exportFile, new File(libsFolder, exportName));
