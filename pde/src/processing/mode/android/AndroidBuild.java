@@ -337,8 +337,11 @@ class AndroidBuild extends JavaBuild
         if(csdFile.exists()){
             if(Base.isWindows())
                 writer.println("android.library.reference.1=..\\\\..\\\\..\\\\..\\\\My Documents\\\\Processing\\\\libraries\\\\CsoundAndroid");
-            if(Base.isLinux())
-                writer.println("android.library.reference.1=../CsoundAndroid");
+            else if(Base.isLinux()){
+                String androidRef = "android.library.reference.1=../.."+System.getenv("HOME")+"/sketchbook/libraries/CsoundAndroid";
+                writer.println(androidRef);
+               // writer.println("android.library.reference.1=../../home/rory/sketchbook/libraries/CsoundAndroid");  
+            }
         }
         writer.flush();
         writer.close();
