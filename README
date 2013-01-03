@@ -110,29 +110,6 @@ $ cd yoursketchbook/libraries/csoundo/library
 $ ln -s /Library/Frameworks/CsoundLib.framework/Resources/Java/csnd.jar csnd.jar
 
 
-4) Make modifications to the 'processing' lauch script.
-
-There is currently one known method for running Csoundo on linux.
-That is, to make to modifications to the 'processing' launcher
-script in the root folder of Processing.
-
-A. Towards the very end, right before the line "# Start Processing
-in the same directory as this script", add this code (your csound
-plugins folder may vary):
-
-#make sure that OPCODEDIR is set..  export
-OPCODEDIR=/usr/local/lib/csound/plugins log OPCODEDIR
-
-B. Replace the last line "java processing.app.Base "$SKETCH" &" to
-the following:
-
-java -Djava.library.path=/usr/local/lib processing.app.Base "$SKETCH" &
-
-
-Thanks to Rory Walsh for this info.
-
-
-
 Running on Windows
 ------------------
 
