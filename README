@@ -1,20 +1,18 @@
 'Csoundo' is a Csound library for Processing.
 
-Copyright (c) 2010 Jacob Joaquin jacobjoaquin@gmail.com
-http://csoundblog.com/
+Jacob Joaquin, Conor Robotham, Rory Walsh
 
+Copyright (c) 2010  jacobjoaquin@gmail.com
+http://csoundblog.com/
 Update to Processing 2.0, and addition of Android support by Conor Robotham, 2012.  
 
 Note  
 ----
 
-Csoundo development is in early Alpha. Though people have
-been successful in running Csoundo on Linux, OS X and Windows, there
-are still many issues that are preventing people from getting Csoundo
-to work on their computers. For example, Csoundo only works with
-the floats version of Csoundo, not doubles. (see "Known Issues" at
-the end)
-
+Csoundo development is still in its early stages. Though people have
+been successful in running Csoundo on Linux, OSX and Windows, there
+are still many issues that need to be addressed. See the 'issues'
+tracker on the github site. 
 
 
 What is Processing?
