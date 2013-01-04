@@ -35,27 +35,45 @@ import java.util.*;
  */
 public class MessageQueue {
 	private String csd;
-	private Vector<ChannelMessage> messages;
+	private Vector<ChannelMessage> channelMessageQueue;
+        private Vector<TableMessage> tableMessageQueue;
 	
 	
 	public MessageQueue(){
-		messages = new Vector<ChannelMessage>();
+		channelMessageQueue = new Vector<ChannelMessage>();
+                tableMessageQueue = new Vector<TableMessage>();
 	} 
 	
-	public void addMessageToQueue(String _chan, double _val){
-		messages.addElement(new ChannelMessage(_chan, _val));
+	public void addMessageToChannelQueue(String _chan, double _val){
+		channelMessageQueue.addElement(new ChannelMessage(_chan, _val));
 	}
 	
-	public ChannelMessage getMessageFromQueue(int index){
-		return messages.get(index);
+	public void addMessageToTableQueue(int _tableNumber, int _index, double _amp){
+		tableMessageQueue.addElement(new TableMessage(_tableNumber, _index, _amp));
 	}
 	
-	public int getNumberOfMessagesInQueue(){
-		return messages.size();
+	public ChannelMessage getMessageFromChannelQueue(int index){
+		return channelMessageQueue.get(index);
 	}
-	
-	public void flushMessagesFromQueue(){
-		messages.removeAllElements();
+
+	public TableMessage getMessageFromTableQueue(int index){
+		return tableMessageQueue.get(index);
+	}        
+        
+	public int getNumberOfMessagesInChannelQueue(){
+		return channelMessageQueue.size();
 	}
+
+	public int getNumberOfMessagesInTableQueue(){
+		return tableMessageQueue.size();
+	}        
+        
+	public void flushMessagesFromChannelQueue(){
+		channelMessageQueue.removeAllElements();
+	}
+        
+	public void flushMessagesFromTableQueue(){
+		tableMessageQueue.removeAllElements();
+	}        
 }
 

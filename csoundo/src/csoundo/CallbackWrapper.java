@@ -17,10 +17,21 @@ public class CallbackWrapper extends CsoundCallbackWrapper{
    
     public int YieldCallback()
     {
-    for(int i=0;i<messageQueue.getNumberOfMessagesInQueue();i++)
-    //System.out.println("yielded");
-    csound.SetChannel(messageQueue.getMessageFromQueue(i).channelName, messageQueue.getMessageFromQueue(i).channelData);
-    //messageQueue.flushMessagesFromQueue();
+    //update channels
+    for(int i=0;i<messageQueue.getNumberOfMessagesInChannelQueue();i++)
+    csound.SetChannel(messageQueue.getMessageFromChannelQueue(i).channelName, 
+                      messageQueue.getMessageFromChannelQueue(i).channelData);
+
+    //update table values
+    for(int i=0;i<messageQueue.getNumberOfMessagesInTableQueue();i++)
+    csound.TableSet(messageQueue.getMessageFromTableQueue(i).tableNumber, 
+                    messageQueue.getMessageFromTableQueue(i).xVal,
+                    messageQueue.getMessageFromTableQueue(i).yVal);
+
+    
+    //flush messages from queues
+    messageQueue.flushMessagesFromTableQueue();
+    messageQueue.flushMessagesFromChannelQueue();
     return 1;
     }
 

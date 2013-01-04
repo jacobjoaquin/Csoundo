@@ -342,7 +342,7 @@ public class Csoundo{
      */
     public void setChn(String chn, float value) {
         if(compiledOK)
-        callbackWrapper.messageQueue.addMessageToQueue(chn, value);
+        callbackWrapper.messageQueue.addMessageToChannelQueue(chn, value);
     }
 
     /**
@@ -352,21 +352,6 @@ public class Csoundo{
         if(compiledOK)
         csound.SetChannel(chn, sValue);
     }
-
-    /* TODO: Try to get this working, even if unnecessary.
-    public void setChnTest(String chn, float value) {
-        if (isRunning) {
-            CsoundMYFLTArray myflt = new CsoundMYFLTArray(4);
-            int check = csnd.csoundGetChannelPtr(csound_p, myflt.GetPtr(), chn,
-                                                 csnd.CSOUND_CONTROL_CHANNEL |
-                                                 csnd.CSOUND_INPUT_CHANNEL);
-
-            if (check == 0) {
-                myflt.SetValue(0, value);
-            }
-        }
-    }
-     */
     
     /**
      * Overwrites the Csound options.
@@ -398,35 +383,33 @@ public class Csoundo{
      * @param i Index
      * @return Csound table value
      */
+    
     public float tableGet(int t, int i) {
-        // TODO: If sets are locked, do gets need to be?
 	if (!compiledOK) return 0;
-//	    mutex.lock();
         return (float) csound.TableGet(t, i);
-//	    mutex.unlock();
     }
 
-	/**
-	 * Return the length of a Csound table.
-	 * 
-	 * @param t Table number
-	 * @return Csound table length
-	 */
+    /**
+     * Return the length of a Csound table.
+     * 
+     * @param t Table number
+     * @return Csound table length
+     */
     public int tableLength(int t) {
     if(!compiledOK) return -99999;
     return csound.TableLength(t);
     }
 
     /**
-	 * Sets the value of a Csound table at a specif index.
-	 * 
-	 * @param t Table number
-	 * @param i Index
-	 * @param v Value
-	 */
+     * Sets the value of a Csound table at a specif index.
+     * 
+     * @param t Table number
+     * @param i Index
+     * @param v Value
+     */
     public void tableSet(int t, int i, float v) {
         if(compiledOK)
-        csound.TableSet(t, i, v);
+        callbackWrapper.messageQueue.addMessageToTableQueue(t, i, v);
     }
 
 }
