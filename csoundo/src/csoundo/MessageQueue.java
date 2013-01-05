@@ -35,13 +35,14 @@ import java.util.*;
  */
 public class MessageQueue {
 	private String csd;
+        int numberOfTablesToRetreive;
 	private Vector<ChannelMessage> channelMessageQueue;
         private Vector<TableMessage> tableMessageQueue;
 	
 	
 	public MessageQueue(){
-		channelMessageQueue = new Vector<ChannelMessage>();
-                tableMessageQueue = new Vector<TableMessage>();
+            channelMessageQueue = new Vector<ChannelMessage>();
+            tableMessageQueue = new Vector<TableMessage>();
 	} 
 	
 	public void addMessageToChannelQueue(String _chan, double _val){
@@ -52,6 +53,10 @@ public class MessageQueue {
 		tableMessageQueue.addElement(new TableMessage(_tableNumber, _index, _amp));
 	}
 	
+        public void fillArrayWithTablePoints(int table, float[] array){
+            
+        }
+        
 	public ChannelMessage getMessageFromChannelQueue(int index){
 		return channelMessageQueue.get(index);
 	}

@@ -71,6 +71,8 @@ public class Csoundo{
 
     //Android Mode Constructor
     public Csoundo(PApplet theParent, Context context) {
+        csnd.csoundInitialize(null, null,
+        csnd.CSOUNDINIT_NO_SIGNAL_HANDLER);
         myParent = theParent;
         welcome();
         csound = new AndroidCsound();
@@ -79,10 +81,25 @@ public class Csoundo{
         csd = createTempFile(getResourceFileAsString(0x7f040000, context), context).getAbsolutePath().toLowerCase();
         androidMode=true;
         messageQueue = new MessageQueue();  
+
+        csoundFile = new CsoundFile();
+        csoundFile.setCSD(fileToString(csd));   
+        csoundFile.exportForPerformance();
+        csound.PreCompile();
+        csoundFile.setCommand(options + "\\" +csd);
+        if(csound.Compile(csd)==0)
+            compiledOK = true;
+        else
+            compiledOK = false;
+        
+        checkCompileStatus(compiledOK);
+        
     }
 
     //Java Mode Constructor
     public Csoundo(PApplet theParent, String _csd) {
+        csnd.csoundInitialize(null, null,
+        csnd.CSOUNDINIT_NO_SIGNAL_HANDLER);
         myParent = theParent;
         welcome();
         messageQueue = new MessageQueue();
@@ -91,8 +108,18 @@ public class Csoundo{
         csound = new Csound();
         callbackWrapper = new CallbackWrapper(csound);
         callbackWrapper.SetYieldCallback();
+        
+        csoundFile = new CsoundFile();
+        csoundFile.setCSD(fileToString(csd));
+        csoundFile.exportForPerformance();
+        if(csound.Compile(csd)==0)
+            compiledOK = true;
+        else
+            compiledOK = false;
+        
+        checkCompileStatus(compiledOK);
     }
-
+    
     //Method for Android, locates .csd file in .apk and returns it as a string.
     protected String getResourceFileAsString(int resId, Context context) {
        StringBuilder str = new StringBuilder();
@@ -128,7 +155,15 @@ public class Csoundo{
 
        return f;
      }
-
+   
+    public int performKsmps(){
+        return csound.PerformKsmps();
+    }  
+     
+    public void stopPerformKsmps(){
+        csound.Stop();
+    }
+     
     public void dispose() {
         System.out.println("Csound dispose");
         // NOTE: 
@@ -142,39 +177,6 @@ public class Csoundo{
     }
 
     private void csoundPerf() {
-        csnd.csoundInitialize(null, null,
-        csnd.CSOUNDINIT_NO_SIGNAL_HANDLER);
-        csoundFile = new CsoundFile();
-        csoundFile.setCSD(fileToString(csd));
-
-        if(androidMode){
-
-            csoundFile.exportForPerformance();
-            csound.PreCompile();
-            csoundFile.setCommand(options + "\\" +csd);
-            if(csound.Compile(csd)==0){
-                compiledOK = true;
-                callbackWrapper = new CallbackWrapper(csound);
-            }
-            else
-                compiledOK = false;
-        }
-        else{
-            csoundFile.exportForPerformance();
-            if(csound.Compile(csd)==0){
-                compiledOK = true;
-                callbackWrapper = new CallbackWrapper(csound);
-            }
-            else
-                compiledOK = false;
-
-        }
-        if(compiledOK)
-        System.out.println("Csound compiled your file without error");
-        else
-        System.out.println("Csound failed to compile your file");
-
-
         if (compiledOK) {
             isRunning = true;
             perfThread = new CsoundPerformanceThread(csound.GetCsound());
@@ -384,10 +386,13 @@ public class Csoundo{
      * @return Csound table value
      */
     
+    //this should only be called when performKsmps is finished a cycle
     public float tableGet(int t, int i) {
 	if (!compiledOK) return 0;
         return (float) csound.TableGet(t, i);
     }
+    
+   
 
     /**
      * Return the length of a Csound table.
@@ -395,21 +400,29 @@ public class Csoundo{
      * @param t Table number
      * @return Csound table length
      */
+    //as above    
     public int tableLength(int t) {
     if(!compiledOK) return -99999;
     return csound.TableLength(t);
     }
 
     /**
-     * Sets the value of a Csound table at a specif index.
+     *  Writes table changes to a queue, they will be sent to Csound at a safe time.
      * 
      * @param t Table number
      * @param i Index
      * @param v Value
      */
-    public void tableSet(int t, int i, float v) {
+    public void tableSet(int t, int i, float v){
         if(compiledOK)
         callbackWrapper.messageQueue.addMessageToTableQueue(t, i, v);
     }
 
+    
+    private void checkCompileStatus(boolean status){
+        if(status)
+        System.out.println("Csound compiled your file without error");
+        else
+        System.out.println("Csound failed to compile your file");
+    }
 }
