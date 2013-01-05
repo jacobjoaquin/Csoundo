@@ -37,6 +37,7 @@ import java.io.InputStreamReader;
 import java.io.*;
 
 public class Csoundo{
+    CsoundMYFLTArray table;
     PApplet myParent;
     public final static String VERSION = "0.2.1";
     boolean androidMode;
@@ -392,6 +393,17 @@ public class Csoundo{
         return (float) csound.TableGet(t, i);
     }
     
+    public int getTable(SWIGTYPE_p_p_double tablePtr, int i) {
+	if (!compiledOK) return 0;
+        return csound.GetTable(tablePtr, i);
+    }
+
+// can't overload this for android interface.....    
+//    public int getTable(SWIGTYPE_p_p_float tablePtr, int i) {
+//	if (!compiledOK) return 0;
+//        return csound.GetTable(tablePtr, i);
+//    }
+        
    
 
     /**
